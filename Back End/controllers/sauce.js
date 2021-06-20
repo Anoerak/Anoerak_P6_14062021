@@ -26,9 +26,9 @@ exports.modifySauce = (req, res, next) => {
 };
 
 exports.likeSauce = (req, res, next) => {
-    Sauce.findOne({_id: req.params.id})
-    Sauce.updateOne({ _id: req.params.usersLiked}, { ...sauceObject, _id: req.params.userslikes})
-    .then(() => res.status(200).json({ message: 'Objet Modifié avec succès !'}))
+    console.log(req.body)
+    Sauce.updateOne({ _id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}})
+    .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
     .catch(error => res.status(400).json({ error }));
 };
 
