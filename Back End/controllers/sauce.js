@@ -27,7 +27,11 @@ exports.modifySauce = (req, res, next) => {
 
 exports.likeSauce = (req, res, next) => {
     console.log(req.body)
-    Sauce.updateOne({ _id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}})
+    // const counter = req.body.like;
+    // const likeNeg = {{_id: req.params.id}, {$push: {usersDisliked: req.body.userId}, $inc: {dislikes: 1}}};
+    // const likeNeutral = {_id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}};
+    // const likePos =  {_id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}};
+    Sauce.updateOne( {_id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}})
     .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
     .catch(error => res.status(400).json({ error }));
 };
