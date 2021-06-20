@@ -25,6 +25,14 @@ exports.modifySauce = (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 };
 
+exports.likeSauce = (req, res, next) => {
+    Sauce.findOne({_id: req.params.id})
+    Sauce.updateOne({ _id: req.params.usersLiked}, { ...sauceObject, _id: req.params.userslikes})
+    .then(() => res.status(200).json({ message: 'Objet Modifié avec succès !'}))
+    .catch(error => res.status(400).json({ error }));
+};
+
+
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({_id: req.params.id})
     .then( sauce => {

@@ -26,10 +26,10 @@ exports.login = (req, res, next) => {
         bcrypt.compare(req.body.password, user.password)
         .then(valid => {
             if(!valid){
-                return res.status(401).json({ error });   
+                return res.status(401).json({ error: 'Mot de Passe Incorrect !' });   
             }
             res.status(200).json({
-                userId: user.id,
+                userId: user._id,
                 token: jwt.sign(
                     { userId: user._id},
                     'Setback_!&%Lunchroom_!&%Guide_!&%Twisting_!&%Gravity_!&%Lively',
