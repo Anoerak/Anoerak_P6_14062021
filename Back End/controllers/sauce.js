@@ -1,6 +1,5 @@
 const Sauce = require('../models/sauce');
 const fs = require('fs');
-const { count } = require('../models/sauce');
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
@@ -28,48 +27,47 @@ exports.modifySauce = (req, res, next) => {
 
 exports.likeSauce = (req, res, next) => {
     const counter = req.body.like;
+    const user = req.body.userId;
     Sauce.findOne({_id: req.params.id})
-    .then( function likeItOrNot () {
-        if( counter === 1){
-            const userLog = req.params.id;
-            const usersArray = Sauce.usersLiked;
-            console.log(Sauce.usersLiked)
-            if ({$indexOfArray: usersArray, userLog} !== -1){
-                Sauce.updateOne( {_id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}})
-                    .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
-                    .catch(error => res.status(400).json({ error }));
-            } else {
-            }
-        } 
-        else if (counter === 0){
-            const userLog = req.params.id;
-            const usersArray = Sauce.usersLiked;
-            if ({$indexOfArray: usersArray, userLog} !== -1){
-                Sauce.updateOne( {_id: req.params.id}, {$pull: {usersLiked: req.body.userId}, $inc: {likes: -1}})
-                    .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
-                    .catch(error => res.status(400).json({ error }));
-            } else if ({$indexOfArray: Sauce.usersDisliked, userLog} !== -1){
-                    Sauce.updateOne( {_id: req.params.id}, {$pull: {usersDisliked: req.body.userId}, $inc: {dislikes: -1}})
+        .then( function likeItOrNot () {
+            if( counter === 1){
+                const userLog = req.params.id;
+                const usersArray = Sauce.usersLiked;
+                if ({$indexOfArray: usersArray, userLog} !== -1){
+                    Sauce.updateOne( {_id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}})
                         .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
                         .catch(error => res.status(400).json({ error }));
-                } else{
-                } 
-            }
-        else if (counter === -1) {
-            const userLog = req.params.id;
-            if ({$indexOfArray:Sauce.usersDisliked, userLog} !== -1){
-                Sauce.updateOne( {_id: req.params.id}, {$push: {usersDisliked: req.body.userId}, $inc: {dislikes: 1}})
-                    .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
-                    .catch(error => res.status(400).json({ error }));
-            } else {
-            }
-        } else {
-        }
-    }
-    )
-    .catch(error => res.status(500).json({ error }));
+                } else {}
+            } 
+            else if (counter === 0){
+                Sauce.find({_id: req.params.id, usersLiked: user}, function (err, docs) {
+                    console.log(err)
+                    console.log(docs)
+                    if (docs == ''){
+                        Sauce.updateOne( {_id: req.params.id}, {$pull: {usersDisliked: req.body.userId}, $inc: {dislikes: -1}})
+                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .catch(error => res.status(400).json({ error }));
+                    } else {
+                        Sauce.updateOne( {_id: req.params.id}, {$pull: {usersLiked: req.body.userId}, $inc: {likes: -1}})
+                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .catch(error => res.status(400).json({ error }));
+                    }
+                    })
+                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .catch(error => res.status(500).json({ error }));
+                
+                }
+            else if (counter === -1) {
+                const userLog = req.params.id;
+                if ({$indexOfArray:Sauce.usersDisliked, userLog} !== -1){
+                    Sauce.updateOne( {_id: req.params.id}, {$push: {usersDisliked: req.body.userId}, $inc: {dislikes: 1}})
+                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .catch(error => res.status(400).json({ error }));
+                } else {}
+            } else {}
+        })
+        .catch(error => res.status(500).json({ error }));
 };
-
 
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({_id: req.params.id})
