@@ -21,7 +21,7 @@ exports.modifySauce = (req, res, next) => {
         `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
      } : {...req.body };
     Sauce.updateOne({ _id: req.params.id}, { ...sauceObject, _id: req.params.id})
-    .then(() => res.status(200).json({ message: 'Objet Modifié avec succès !'}))
+    .then(() => res.status(201).json({ message: 'Objet Modifié avec succès !'}))
     .catch(error => res.status(400).json({ error }));
 };
 
@@ -35,7 +35,7 @@ exports.likeSauce = (req, res, next) => {
                 const usersArray = Sauce.usersLiked;
                 if ({$indexOfArray: usersArray, userLog} !== -1){
                     Sauce.updateOne( {_id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}})
-                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .then(() => res.status(201).json({ message: 'Merci pour votre vote !'}))
                         .catch(error => res.status(400).json({ error }));
                 } else {}
             } 
@@ -45,15 +45,15 @@ exports.likeSauce = (req, res, next) => {
                     console.log(docs)
                     if (docs == ''){
                         Sauce.updateOne( {_id: req.params.id}, {$pull: {usersDisliked: req.body.userId}, $inc: {dislikes: -1}})
-                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .then(() => res.status(201).json({ message: 'Merci pour votre vote !'}))
                         .catch(error => res.status(400).json({ error }));
                     } else {
                         Sauce.updateOne( {_id: req.params.id}, {$pull: {usersLiked: req.body.userId}, $inc: {likes: -1}})
-                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .then(() => res.status(201).json({ message: 'Merci pour votre vote !'}))
                         .catch(error => res.status(400).json({ error }));
                     }
                     })
-                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .then(() => res.status(201).json({ message: 'Merci pour votre vote !'}))
                         .catch(error => res.status(500).json({ error }));
                 
                 }
@@ -61,7 +61,7 @@ exports.likeSauce = (req, res, next) => {
                 const userLog = req.params.id;
                 if ({$indexOfArray:Sauce.usersDisliked, userLog} !== -1){
                     Sauce.updateOne( {_id: req.params.id}, {$push: {usersDisliked: req.body.userId}, $inc: {dislikes: 1}})
-                        .then(() => res.status(200).json({ message: 'Merci pour votre vote !'}))
+                        .then(() => res.status(201).json({ message: 'Merci pour votre vote !'}))
                         .catch(error => res.status(400).json({ error }));
                 } else {}
             } else {}
@@ -75,7 +75,7 @@ exports.deleteSauce = (req, res, next) => {
         const filename = sauce.imageUrl.split('/images/')[1];
         fs.unlink(`images/${filename}`, () => {
             Sauce.deleteOne({ _id: req.params.id })
-                .then(() => res.status(200).json({message: 'Objet Supprimé avec Succès !!'}))
+                .then(() => res.status(201).json({message: 'Objet Supprimé avec Succès !!'}))
                 .catch(error => res.status(400).json({ error }));
         });
     })
