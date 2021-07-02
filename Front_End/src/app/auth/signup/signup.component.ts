@@ -47,9 +47,14 @@ export class SignupComponent implements OnInit {
       }
     ).catch((error) => {
         this.loading = false;
-        console.error(error);
+        const err = error.error.error;
+        console.error(error.error);
         console.log(error.message);
-        this.errorMsg = error.error;
+        if(err === 'Votre mot de passe doit contenir au moins 12 caractères dont 1 minuscule, 1 majuscule, 1 chiffre et 1 caractère spécial'){
+          this.errorMsg = error.error.error;
+        }else{
+          this.errorMsg = error.error;
+        }
     });
   }
 

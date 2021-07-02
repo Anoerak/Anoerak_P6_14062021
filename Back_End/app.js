@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-var mongoMask = require('mongo-mask')
 
 const path = require('path');
 

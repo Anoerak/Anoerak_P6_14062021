@@ -1,24 +1,40 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+var mongoMask = require('mongo-mask');
+const crypto = require('crypto');
+const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/;
+
 
 
 exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
-    .then(hash => {
-        const user = new User({
-            email: req.body.email,
-            password: hash
-        });
-        user.save()
-        .then(() => res.status(201).json({message: 'Utilisateur Enregistré !'}))
-        .catch(error => res.status(400).json(error.errors['email'].message))
-    })
-    .catch(error => res.status(500).json({ error }));
+    if (!regex.test(req.body.password)) {
+        return res.status(400).json({error:'Votre mot de passe doit contenir au moins 12 caractères dont 1 minuscule, 1 majuscule, 1 chiffre et 1 caractère spécial'})
+    } else {
+        bcrypt.hash(req.body.password, 10)
+        .then(hash => {
+            key = "Setback_!&%Lunchroom_!&%Guide_!&%Twisting_!&%Gravity_!&%Lively";
+            cipher = crypto.createCipher('aes192', key)
+            cipher.update(req.body.email, 'binary', 'hex')
+            encodedString = cipher.final('hex')
+            const user = new User({
+                email: encodedString,
+                password: hash
+            });
+            user.save()
+            .then(() => res.status(201).json({message: 'Utilisateur Enregistré !'}))
+            .catch(error => res.status(400).json(error.errors['email'].message))
+        })
+        .catch(error => res.status(500).json({ error }));
+    }
 };
 
 exports.login = (req, res, next) => {
-    User.findOne({ email: req.body.email})
+    key = "Setback_!&%Lunchroom_!&%Guide_!&%Twisting_!&%Gravity_!&%Lively";
+      cipher = crypto.createCipher('aes192', key)
+      cipher.update(req.body.email, 'binary', 'hex')
+      encodedString = cipher.final('hex')
+    User.findOne({ email: encodedString})
     .then(user => {
         if (!user) {
             return res.status(401).json({ error });            
